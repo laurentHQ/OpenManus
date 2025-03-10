@@ -178,3 +178,26 @@ data/
 
 # Workspace
 workspace/
+
+open_manus_env/
+
+config.toml
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Project files
+trending_grok_analyzer/
+web_crawler_extractor/
+web_crawler_project/
+
+#test files
+tests/
+tests-examples/
+
+# repomix files
+.repomix-output.txt

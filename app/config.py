@@ -15,15 +15,26 @@ PROJECT_ROOT = get_project_root()
 WORKSPACE_ROOT = PROJECT_ROOT / "workspace"
 
 
+class GlobalSettings(BaseModel):
+    """Global application settings."""
+    default_llm: str = Field("default", description="Default LLM configuration to use")
+    log_level: str = Field("INFO", description="Logging level")
+    workspace_dir: str = Field("workspace", description="Workspace directory")
+    max_retries: int = Field(3, description="Maximum number of retries for operations")
+
+
 class LLMSettings(BaseModel):
     model: str = Field(..., description="Model name")
     base_url: str = Field(..., description="API base URL")
     api_key: str = Field(..., description="API key")
     max_tokens: int = Field(4096, description="Maximum number of tokens per request")
     temperature: float = Field(1.0, description="Sampling temperature")
+    tokens_per_minute: int = Field(40000, description="Maximum tokens per minute rate limit")
+    requests_per_minute: int = Field(60, description="Maximum requests per minute")
 
 
 class AppConfig(BaseModel):
+    global_: GlobalSettings = Field(alias="global")
     llm: Dict[str, LLMSettings]
 
 
@@ -65,6 +76,11 @@ class Config:
 
     def _load_initial_config(self):
         raw_config = self._load_config()
+        
+        # Load global settings
+        global_settings = raw_config.get("global", {})
+        
+        # Load LLM settings
         base_llm = raw_config.get("llm", {})
         llm_overrides = {
             k: v for k, v in raw_config.get("llm", {}).items() if isinstance(v, dict)
@@ -76,9 +92,12 @@ class Config:
             "api_key": base_llm.get("api_key"),
             "max_tokens": base_llm.get("max_tokens", 4096),
             "temperature": base_llm.get("temperature", 1.0),
+            "tokens_per_minute": base_llm.get("tokens_per_minute", 40000),
+            "requests_per_minute": base_llm.get("requests_per_minute", 60),
         }
 
         config_dict = {
+            "global": global_settings,
             "llm": {
                 "default": default_settings,
                 **{
@@ -91,7 +110,13 @@ class Config:
         self._config = AppConfig(**config_dict)
 
     @property
+    def global_(self) -> GlobalSettings:
+        """Get global settings."""
+        return self._config.global_
+
+    @property
     def llm(self) -> Dict[str, LLMSettings]:
+        """Get LLM settings."""
         return self._config.llm
 
 

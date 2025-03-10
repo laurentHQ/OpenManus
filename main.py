@@ -1,11 +1,17 @@
 import asyncio
 
 from app.agent.manus import Manus
+from app.config import config
 from app.logger import logger
 
 
 async def main():
-    agent = Manus()
+    # Get the default LLM configuration from global settings
+    default_llm = config.global_.default_llm
+    
+    # Initialize agent with configured LLM
+    agent = Manus(llm_config_name=default_llm)
+    
     while True:
         try:
             prompt = input("Enter your prompt (or 'exit' to quit): ")

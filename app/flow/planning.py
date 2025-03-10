@@ -10,12 +10,13 @@ from app.llm import LLM
 from app.logger import logger
 from app.schema import AgentState, Message
 from app.tool import PlanningTool
+from app.config import config
 
 
 class PlanningFlow(BaseFlow):
     """A flow that manages planning and execution of tasks using agents."""
 
-    llm: LLM = Field(default_factory=lambda: LLM())
+    llm: LLM = Field(default_factory=lambda: LLM(config_name=config.global_.default_llm))
     planning_tool: PlanningTool = Field(default_factory=PlanningTool)
     executor_keys: List[str] = Field(default_factory=list)
     active_plan_id: str = Field(default_factory=lambda: f"plan_{int(time.time())}")

@@ -30,6 +30,7 @@ class BaseAgent(BaseModel, ABC):
 
     # Dependencies
     llm: LLM = Field(default_factory=LLM, description="Language model instance")
+    llm_config_name: Optional[str] = Field(None, description="LLM configuration name to use")
     memory: Memory = Field(default_factory=Memory, description="Agent's memory store")
     state: AgentState = Field(
         default=AgentState.IDLE, description="Current agent state"
@@ -49,7 +50,9 @@ class BaseAgent(BaseModel, ABC):
     def initialize_agent(self) -> "BaseAgent":
         """Initialize agent with default settings if not provided."""
         if self.llm is None or not isinstance(self.llm, LLM):
-            self.llm = LLM(config_name=self.name.lower())
+            # Use provided config name, fallback to agent name, then default
+            config_name = self.llm_config_name or self.name.lower()
+            self.llm = LLM(config_name=config_name)
         if not isinstance(self.memory, Memory):
             self.memory = Memory()
         return self

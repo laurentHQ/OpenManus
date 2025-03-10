@@ -6,6 +6,7 @@ from pydantic import Field
 from app.agent.base import BaseAgent
 from app.llm import LLM
 from app.schema import AgentState, Memory
+from app.config import config
 
 
 class ReActAgent(BaseAgent, ABC):
@@ -15,7 +16,7 @@ class ReActAgent(BaseAgent, ABC):
     system_prompt: Optional[str] = None
     next_step_prompt: Optional[str] = None
 
-    llm: Optional[LLM] = Field(default_factory=LLM)
+    llm: Optional[LLM] = Field(default_factory=lambda: LLM(config_name=config.global_.default_llm))
     memory: Memory = Field(default_factory=Memory)
     state: AgentState = AgentState.IDLE
 

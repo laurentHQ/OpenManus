@@ -1,0 +1,14 @@
+{
+  "name": "openmanus",
+  "version": "1.0.0",
+  "description": "<p align=\"left\">\r     <a href=\"README_zh.md\">中文</a>&nbsp ｜ &nbspEnglish&nbsp\r </p>",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.51.0",
+    "@types/node": "^22.13.10"
+  }
+}
